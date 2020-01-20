@@ -170,8 +170,8 @@ async function pipeline(options = {}) {
     logger('Uploaded and selected all new icons');
     await c.click(PAGE.MENU_BUTTON);
     await c.click(PAGE.REARRANGE_BUTTON);
-    await c.click(PAGE.REARRANGE_ORDER_BUTTON);
     await waitVisible(c, PAGE.CONFIRM_REARRANGE_BUTTON);
+    await c.click(PAGE.REARRANGE_ORDER_BUTTON);
     await c.click(PAGE.CONFIRM_REARRANGE_BUTTON);
     await c.click(PAGE.SELECT_ALL_BUTTON);
     logger('List Rearranged');
