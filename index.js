@@ -116,6 +116,7 @@ async function pipeline(options = {}) {
       forceOverride = false,
       whenFinished,
       visible = false,
+      rearrange = false,
     } = options;
     const outputDir = options.outputDir ? getAbsolutePath(options.outputDir) : DEFAULT_OPTIONS.outputDir;
     // prepare stage
@@ -168,13 +169,15 @@ async function pipeline(options = {}) {
     await waitVisible(c, PAGE.FIRST_ICON_BOX);
     await c.click(PAGE.SELECT_ALL_BUTTON);
     logger('Uploaded and selected all new icons');
-    await c.click(PAGE.MENU_BUTTON);
-    await c.click(PAGE.REARRANGE_BUTTON);
-    await waitVisible(c, PAGE.CONFIRM_REARRANGE_BUTTON);
-    await c.click(PAGE.REARRANGE_ORDER_BUTTON);
-    await c.click(PAGE.CONFIRM_REARRANGE_BUTTON);
-    await c.click(PAGE.SELECT_ALL_BUTTON);
-    logger('List Rearranged');
+    if (rearrange) {
+      await c.click(PAGE.MENU_BUTTON);
+      await c.click(PAGE.REARRANGE_BUTTON);
+      await waitVisible(c, PAGE.CONFIRM_REARRANGE_BUTTON);
+      await c.click(PAGE.REARRANGE_ORDER_BUTTON);
+      await c.click(PAGE.CONFIRM_REARRANGE_BUTTON);
+      await c.click(PAGE.SELECT_ALL_BUTTON);
+      logger('List Rearranged');
+    }
     await c.click(PAGE.GENERATE_LINK);
     await waitVisible(c, PAGE.GLYPH_SET);
     if (names.length) {
@@ -212,6 +215,10 @@ async function pipeline(options = {}) {
       // sleep to ensure the code was executed
       await sleep(1000);
     }
+    // reload the page let icomoon read latest indexedDB data
+    await c.send('Page.reload');
+    await c.waitLoadEvent();
+    await waitVisible(c, PAGE.DOWNLOAD_BUTTON);    
     await c.click(PAGE.DOWNLOAD_BUTTON);
     const meta = selection.preferences.fontPref.metadata;
     const zipName = meta.majorVersion
